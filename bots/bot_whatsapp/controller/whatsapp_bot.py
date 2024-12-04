@@ -1,6 +1,7 @@
 # bot_whatsapp/controller/whatsapp_bot.py
 import asyncio
-from typing import Dict, Callable
+from typing import Dict
+from datetime import datetime
 from settings.logger import setup_logger
 from settings.connection_db import async_session
 from urllib.error import HTTPError
@@ -56,6 +57,12 @@ class WhatsAppBot:
         logger.info(f"Получено уведомление/сообщение: {notification}")
         
         data_to_save = extract_message_data(notification)
+        
+        # Проверка и преобразование timestamp(Unix) в datetime
+        if isinstance(data_to_save.get('timestamp'), int):
+            data_to_save['timestamp'] = datetime.fromtimestamp(data_to_save['timestamp'])
+            
+        logger.info(f"\n\nДанные для сохранения: {data_to_save}\n\n")
         async with async_session() as session:
             await save_notification_to_db(session, data_to_save)
 

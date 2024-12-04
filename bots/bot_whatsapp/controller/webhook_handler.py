@@ -26,24 +26,23 @@ class WebhookHandler:
         message_data = body.get("messageData", {})
         message_text = extract_message_text(message_data)
         logger.info(f"Входящее сообщение {message_text}")
-        # Получаем номер телефона отправителя
         phone_number = body.get("senderData", {}).get("sender", "")
+
         if not phone_number:
             raise ValueError("Номер телефона отсутствует в данных вебхука.")
 
         # Инициализируем AITraveler для нового номера телефона
         if phone_number not in self.ai_travelers:
             logger.info(f"Создание нового AITraveler для номера: {phone_number}")
-            self.ai_travelers[phone_number] = AITraveler()
+            self.ai_travelers[phone_number] = AITraveler(phone_number=phone_number)
             
-        # Генерируем ответ с помощью AI
         ai_traveler = self.ai_travelers[phone_number]
         ai_response = await ai_traveler.process_message(message_text)
 
-        # Отправляем ответ через WhatsAppBot
         logger.info(f"Ответ от ИИ {ai_response}")
         await self.green_api.send_message(phone_number, ai_response)
         return ai_response
+
 
     async def handle_outgoing_message(self, body: Dict):
         """Обрабатывает исходящее сообщение."""

@@ -20,9 +20,12 @@ def extract_message_text(message_data: Dict) -> Optional[str]:
     elif message_type == "extendedTextMessage":
         return message_data.get("extendedTextMessageData", {}).get("text", None)
     elif message_type == "audioMessage":
-        return None
+        # handler using whisper
+        return "(Аудиосообщение)"
+    elif message_type == "imageMessage":
+        return '(Пользователь отправил изображение)'
     else:
-        return None
+        return "(Неизвестный тип сообщения)"
     
 
 def extract_message_data(notification: Dict) -> Dict:
@@ -32,7 +35,7 @@ def extract_message_data(notification: Dict) -> Dict:
     instance_data = body.get("instanceData", {})
     sender_data = body.get("senderData", {})
     message_data = body.get("messageData", {})
-    message_text = extract_message_text(message_data)
+    message_text = extract_message_text(message_data) or "(Сообщение отсутствует)"
 
     return {
         "receipt_id": receipt_id,

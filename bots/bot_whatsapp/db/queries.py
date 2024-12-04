@@ -97,4 +97,3 @@ async def save_notification_to_db(session, data_to_save: Dict):
         # logger.info(f"Уведомление сохранено в БД: {data_to_save}")
     except Exception as db_error:
         logger.error(f"Ошибка при сохранении уведомления в БД: {db_error}")
-
